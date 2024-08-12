@@ -86,23 +86,6 @@ public class QuestionnaireFhirResourceProviderTest extends BaseFhirProvenanceRes
 		assertThat(resourceProvider.getQuestionnaireById(idType), nullValue());
 	}
 	
-	@Test
-    public void searchQuestionnaires_shouldReturnMatchingBundleOfQuestionnairesByName() {
-        StringAndListParam nameParam = new StringAndListParam()
-                .addAnd(new StringOrListParam().add(new StringParam(FORM_NAME)));
-
-        when(questionnaireService.searchForQuestionnaires(new QuestionnaireSearchParams(nameParam, null, null, null)))
-                .thenReturn(new MockIBundleProvider<>(Collections.singletonList(questionnaire), 10, 1));
-
-        IBundleProvider results = resourceProvider.searchQuestionnaire(nameParam, null, null, null);
-        List<IBaseResource> resources = getResources(results);
-
-        assertThat(resources, notNullValue());
-        assertThat(resources, hasSize(equalTo(1)));
-        assertThat(resources.get(0).fhirType(), is(FhirConstants.QUESTIONNAIRE));
-        assertThat(resources.get(0).getIdElement().getIdPart(), is(QUESTIONNAIRE_UUID));
-    }
-	
 	private List<IBaseResource> getResources(IBundleProvider result) {
 		return result.getResources(0, 10);
 	}

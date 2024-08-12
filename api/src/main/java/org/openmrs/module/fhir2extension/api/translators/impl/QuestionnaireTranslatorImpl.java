@@ -18,10 +18,8 @@ import ca.uhn.fhir.parser.IParser;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.hl7.fhir.r4.model.*;
-import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.FormService;
-import org.openmrs.module.fhir2extension.FhirConstants;
 import org.openmrs.module.fhir2extension.api.translators.QuestionnaireTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,19 +32,16 @@ public class QuestionnaireTranslatorImpl implements QuestionnaireTranslator {
 	FormService formService;
 	
 	@Override
-	public Questionnaire toFhirResource(@Nonnull Form openmrsForm) {
-		notNull(openmrsForm, "The Openmrs Form object should not be null");
-		
-		FormResource resource = formService.getFormResource(openmrsForm, FhirConstants.FHIR_QUESTIONNAIRE_TYPE);
-		notNull(resource, "The Openmrs Form doesn't contain an FHIR Questionnaire");
+	public Questionnaire toFhirResource(@Nonnull FormResource formResource) {
+		notNull(formResource, "The Openmrs FormResource object should not be null");
 		
 		FhirContext ctx = FhirContext.forR4();
 		IParser p = ctx.newJsonParser();
-		return p.parseResource(Questionnaire.class, resource.getValue().toString());
+		return p.parseResource(Questionnaire.class, formResource.getValue().toString());
 	}
 	
 	@Override
-	public Form toOpenmrsType(@Nonnull Questionnaire resource) {
-		return formService.getForm(resource.getId());
+	public FormResource toOpenmrsType(@Nonnull Questionnaire resource) {
+		return (FormResource) formService.getFormResourceByUuid(resource.getId());
 	}
 }

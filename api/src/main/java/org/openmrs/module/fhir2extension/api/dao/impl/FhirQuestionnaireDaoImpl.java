@@ -24,12 +24,14 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.openmrs.Form;
+import org.hibernate.sql.JoinType;
 import org.openmrs.FormResource;
-import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2.api.dao.impl.BaseFhirDao;
+import org.openmrs.module.fhir2extension.FhirConstants;
 import org.openmrs.module.fhir2extension.api.dao.FhirQuestionnaireDao;
 import org.openmrs.module.fhir2.api.search.param.SearchParameterMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Setter(AccessLevel.PACKAGE)
-public class FhirQuestionnaireDaoImpl extends BaseFhirDao<Form> implements FhirQuestionnaireDao {
+public class FhirQuestionnaireDaoImpl extends BaseFhirDao<FormResource> implements FhirQuestionnaireDao {
 	
 	@Autowired
 	@Getter(AccessLevel.PUBLIC)
@@ -47,68 +49,26 @@ public class FhirQuestionnaireDaoImpl extends BaseFhirDao<Form> implements FhirQ
 	private SessionFactory sessionFactory;
 	
 	@Override
-	public Form getQuestionnaireById(@Nonnull Integer id) {
-		return (Form) getSessionFactory().getCurrentSession().createCriteria(Form.class).add(eq("formId", id))
-		        .uniqueResult();
+	public FormResource getQuestionnaireById(@Nonnull Integer id) {
+		return (FormResource) getSessionFactory().getCurrentSession().createCriteria(FormResource.class)
+		        .add(eq("form_resource_id", id)).uniqueResult();
+	}
+	
+	@Override
+	public FormResource get(@Nonnull String uuid) {
+		return (FormResource) getSessionFactory().getCurrentSession().createCriteria(FormResource.class)
+		        .add(eq("uuid", uuid)).uniqueResult();
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Form> getQuestionnairesByIds(@Nonnull Collection<Integer> ids) {
-		return getSessionFactory().getCurrentSession().createCriteria(Form.class).add(in("id", ids)).list();
+	public List<FormResource> getQuestionnairesByIds(@Nonnull Collection<Integer> ids) {
+		return getSessionFactory().getCurrentSession().createCriteria(FormResource.class).add(in("id", ids)).list();
 	}
 	
-	@SuppressWarnings("unchecked")
-    @Override
-    public List<Form> getSearchResults(@Nonnull SearchParameterMap theParams) {
-        Session session = sessionFactory.getCurrentSession();
-
-        // Create CriteriaBuilder
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-
-        // Create CriteriaQuery for main query
-        CriteriaQuery<Form> query = builder.createQuery(Form.class);
-        Root<Form> formRoot = query.from(Form.class);
-        formRoot.alias("f");
-
-        // Create Subquery for FormResource
-        Subquery<Long> subquery = query.subquery(Long.class);
-        Root<FormResource> resourceRoot = subquery.from(FormResource.class);
-        resourceRoot.alias("fr");
-        subquery.select(resourceRoot.get("formResourceId")); // Selecting formId to match in main query
-
-        // Add predicates to the subquery
-        List<Predicate> subqueryPredicates = new ArrayList<>();
-        subqueryPredicates.add(builder.equal(resourceRoot.get("form").get("formId"), formRoot.get("formId")));
-        subqueryPredicates.add(builder.equal(resourceRoot.get("name"), org.openmrs.module.fhir2extension.FhirConstants.FHIR_QUESTIONNAIRE_TYPE));
-        subquery.where(builder.and(subqueryPredicates.toArray(new Predicate[0])));
-
-        // Main query predicates
-        List<Predicate> mainPredicates = new ArrayList<>();
-        setupSearchParams(mainPredicates, builder, formRoot, theParams);
-        mainPredicates.add(builder.equal(formRoot.get("retired"), false));
-        mainPredicates.add(builder.exists(subquery));
-
-        // Add predicates to the query
-        query.select(formRoot).where(builder.and(mainPredicates.toArray(new Predicate[0])));
-
-        List<Form> results = session.createQuery(query).getResultList();
-        return results.stream().map(this::deproxyResult).collect(Collectors.toList());
-    }
+	@Override
+	protected void setupSearchParams(Criteria criteria, SearchParameterMap theParams) {
+		//criteria.add(eq("name", FhirConstants.FHIR_QUESTIONNAIRE_TYPE));
+	}
 	
-	protected void setupSearchParams(List<Predicate> predicates, CriteriaBuilder builder, Root<Form> root,
-                                     SearchParameterMap theParams) {
-        theParams.getParameters().forEach(entry -> {
-            switch (entry.getKey()) {
-                case FhirConstants.NAME_SEARCH_HANDLER:
-                    entry.getValue().forEach(param -> {
-                        ((StringAndListParam) param.getParam()).getValuesAsQueryTokens().stream()
-                                .forEach(l -> l.getValuesAsQueryTokens().stream().forEach(v -> {
-                                    predicates.add(builder.equal(root.get("name"), v.getValue()));
-                                }));
-                    });
-                    break;
-            }
-        });
-    }
 }

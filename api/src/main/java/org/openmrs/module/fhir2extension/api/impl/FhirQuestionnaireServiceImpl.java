@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hl7.fhir.r4.model.Questionnaire;
-import org.openmrs.Form;
+import org.openmrs.FormResource;
 import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2.api.impl.BaseFhirService;
 import org.openmrs.module.fhir2extension.api.FhirQuestionnaireService;
@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Getter(AccessLevel.PROTECTED)
 @Setter(AccessLevel.PACKAGE)
-public class FhirQuestionnaireServiceImpl extends BaseFhirService<Questionnaire, Form> implements FhirQuestionnaireService {
+public class FhirQuestionnaireServiceImpl extends BaseFhirService<Questionnaire, FormResource> implements FhirQuestionnaireService {
 	
 	@Autowired
 	private FhirQuestionnaireDao dao;
@@ -52,11 +52,11 @@ public class FhirQuestionnaireServiceImpl extends BaseFhirService<Questionnaire,
 	private SearchQueryInclude<Questionnaire> searchQueryInclude;
 	
 	@Autowired
-	private SearchQuery<Form, Questionnaire, FhirQuestionnaireDao, QuestionnaireTranslator, SearchQueryInclude<Questionnaire>> searchQuery;
+	private SearchQuery<FormResource, Questionnaire, FhirQuestionnaireDao, QuestionnaireTranslator, SearchQueryInclude<Questionnaire>> searchQuery;
 	
 	@Override
     public List<Questionnaire> getQuestionnairesByIds(@Nonnull Collection<Integer> ids) {
-        List<Form> questionnaires = dao.getQuestionnairesByIds(ids);
+        List<FormResource> questionnaires = dao.getQuestionnairesByIds(ids);
         return questionnaires.stream().map(translator::toFhirResource).collect(Collectors.toList());
     }
 	

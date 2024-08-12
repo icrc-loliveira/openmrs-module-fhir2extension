@@ -14,25 +14,21 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-import org.openmrs.Form;
+import org.openmrs.FormResource;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.module.fhir2.api.dao.FhirDao;
-import org.openmrs.module.fhir2.api.search.param.SearchParameterMap;
 import org.openmrs.util.PrivilegeConstants;
 
-public interface FhirQuestionnaireDao extends FhirDao<Form> {
+public interface FhirQuestionnaireDao extends FhirDao<FormResource> {
 	
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	Form getQuestionnaireById(@Nonnull Integer id);
+	FormResource getQuestionnaireById(@Nonnull Integer id);
 	
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	List<Form> getQuestionnairesByIds(@Nonnull Collection<Integer> ids);
-	
-	@Override
-	@Authorized(PrivilegeConstants.GET_FORMS)
-	Form get(@Nonnull String uuid);
+	List<FormResource> getQuestionnairesByIds(@Nonnull Collection<Integer> ids);
 	
 	@Override
 	@Authorized(PrivilegeConstants.GET_FORMS)
-	List<Form> getSearchResults(@Nonnull SearchParameterMap theParams);
+	FormResource get(@Nonnull String uuid);
+	
 }

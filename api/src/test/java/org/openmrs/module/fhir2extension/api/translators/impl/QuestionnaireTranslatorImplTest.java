@@ -13,15 +13,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
-
 import org.hl7.fhir.r4.model.Questionnaire;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openmrs.*;
+import org.openmrs.FormResource;
 import org.openmrs.api.FormService;
 import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.openmrs.module.fhir2extension.FhirConstants;
@@ -48,47 +46,22 @@ public class QuestionnaireTranslatorImplTest {
 		questionnaireTranslator.setFormService(formService);
 	}
 	
-	@Test(expected = NullPointerException.class)
-	public void shouldTranslateOpenmrsFormToFhirQuestionnaireDoesntContainFHIRQuestionnaire() {
-		
-		Form form = getFormMock();
-		FormResource formResource = getFormResourceMock(form);
-		formResource.setName("");
-		
-		org.hl7.fhir.r4.model.Questionnaire result = questionnaireTranslator.toFhirResource(form);
-	}
-	
 	@Test
-	public void shouldTranslateQuestionnaireToOpenmrsForm() {
-		Form form = getFormMock();
-		when(formService.getForm(FORM_UUID)).thenReturn(form);
+	public void shouldTranslateQuestionnaireToOpenmrsFormResource() {
+		FormResource formResource = getFormResourceMock();
+		when(formService.getFormResourceByUuid(FORM_UUID)).thenReturn(formResource);
 		
 		Questionnaire questionnaire = new Questionnaire();
 		questionnaire.setId(FORM_UUID);
 		
-		Form result = questionnaireTranslator.toOpenmrsType(questionnaire);
+		FormResource result = questionnaireTranslator.toOpenmrsType(questionnaire);
 		assertThat(result, notNullValue());
-		assertThat(result, equalTo(form));
+		assertThat(result, equalTo(formResource));
 	}
 	
-	public Form getFormMock() {
-		User user = new User();
-		user.setUuid(USER_UUID);
-		
-		Form formMock = new Form();
-		formMock.setUuid(FORM_UUID);
-		formMock.setCreator(user);
-		formMock.setDateCreated(new Date());
-		formMock.setChangedBy(user);
-		formMock.setDateChanged(new Date());
-		
-		return formMock;
-	}
-	
-	public FormResource getFormResourceMock(Form formMock) {
+	public FormResource getFormResourceMock() {
 		FormResource formResourceMock = new FormResource();
 		formResourceMock.setUuid(FORM_RESOURCE_UUID);
-		formResourceMock.setForm(formMock);
 		formResourceMock.setName(FhirConstants.FHIR_QUESTIONNAIRE_TYPE);
 		formResourceMock.setDatatypeClassname(RESOURCE_DATE_TYPE);
 		LongFreeTextDatatype value = new LongFreeTextDatatype();

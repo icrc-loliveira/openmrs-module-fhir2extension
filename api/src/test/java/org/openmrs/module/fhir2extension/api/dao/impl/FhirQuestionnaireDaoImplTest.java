@@ -19,7 +19,7 @@ import ca.uhn.fhir.rest.param.*;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.Form;
+import org.openmrs.FormResource;
 import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2extension.TestFhirSpringConfiguration;
 import org.openmrs.module.fhir2.api.search.param.SearchParameterMap;
@@ -54,7 +54,7 @@ public class FhirQuestionnaireDaoImplTest extends BaseModuleContextSensitiveTest
 	
 	@Test
 	public void getQuestionnaireById_shouldRetrieveQuestionnaireById() {
-		Form result = dao.getQuestionnaireById(2);
+		FormResource result = dao.getQuestionnaireById(2);
 		
 		assertThat(result, notNullValue());
 		assertThat(result.getUuid(), equalTo(FORM_2_UUID));
@@ -66,7 +66,7 @@ public class FhirQuestionnaireDaoImplTest extends BaseModuleContextSensitiveTest
         List<Integer> ids = new ArrayList<>();
         ids.add(2);
         ids.add(3);
-        List<Form> result = dao.getQuestionnairesByIds(ids);
+        List<FormResource> result = dao.getQuestionnairesByIds(ids);
 
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(2));
@@ -82,7 +82,7 @@ public class FhirQuestionnaireDaoImplTest extends BaseModuleContextSensitiveTest
 	@Test
 	public void getSearchResults_shouldRetrieveAllQuestionnaires() {
 		
-		List<Form> result = dao.getSearchResults(new SearchParameterMap());
+		List<FormResource> result = dao.getSearchResults(new SearchParameterMap());
 		
 		assertThat(result, notNullValue());
 		assertThat(result.size(), equalTo(2));
@@ -97,7 +97,7 @@ public class FhirQuestionnaireDaoImplTest extends BaseModuleContextSensitiveTest
 		listParam.addAnd(new StringParam(FORM_2_NAME));
 		SearchParameterMap theParams = new SearchParameterMap().addParameter(FhirConstants.NAME_SEARCH_HANDLER, listParam);
 		
-		List<Form> result = dao.getSearchResults(theParams);
+		List<FormResource> result = dao.getSearchResults(theParams);
 		
 		assertThat(result, notNullValue());
 		assertThat(result.get(0).getUuid(), equalTo(FORM_2_UUID));

@@ -55,11 +55,10 @@ public class QuestionnaireFhirResourceProvider implements IResourceProvider {
 	
 	@Search
 	@SuppressWarnings("unused")
-	public IBundleProvider searchQuestionnaire(@OptionalParam(name = Questionnaire.SP_NAME) StringAndListParam name,
-	        @OptionalParam(name = Questionnaire.SP_RES_ID) TokenAndListParam id,
+	public IBundleProvider searchQuestionnaire(@OptionalParam(name = Questionnaire.SP_RES_ID) TokenAndListParam id,
 	        @OptionalParam(name = "_lastUpdated") DateRangeParam lastUpdated, @Sort SortSpec sort) {
 		
-		return fhirQuestionnaireService.searchForQuestionnaires(new QuestionnaireSearchParams(name, id, lastUpdated, sort));
+		return fhirQuestionnaireService.searchForQuestionnaires(new QuestionnaireSearchParams(null, id, lastUpdated, sort));
 	}
 	
 	/**

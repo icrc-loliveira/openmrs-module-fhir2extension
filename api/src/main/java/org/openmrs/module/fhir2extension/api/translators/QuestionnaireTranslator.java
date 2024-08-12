@@ -12,18 +12,18 @@ package org.openmrs.module.fhir2extension.api.translators;
 import javax.annotation.Nonnull;
 
 import org.hl7.fhir.r4.model.Questionnaire;
-import org.openmrs.Form;
+import org.openmrs.FormResource;
 import org.openmrs.module.fhir2.api.translators.OpenmrsFhirTranslator;
 
-public interface QuestionnaireTranslator extends OpenmrsFhirTranslator<Form, Questionnaire> {
+public interface QuestionnaireTranslator extends OpenmrsFhirTranslator<FormResource, Questionnaire> {
 	
 	/**
-	 * Maps an {@link Form} to a {@link Questionnaire}
+	 * Maps an {@link org.openmrs.FormResource} to a {@link Questionnaire}
 	 * 
-	 * @param form the form to translate
+	 * @param formResource the formResource to translate
 	 * @return the corresponding FHIR questionnaire resource
 	 */
 	@Override
-	Questionnaire toFhirResource(@Nonnull Form form);
+	Questionnaire toFhirResource(@Nonnull FormResource formResource);
 	
 }
