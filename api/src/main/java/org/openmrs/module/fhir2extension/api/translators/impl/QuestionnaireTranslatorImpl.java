@@ -34,7 +34,6 @@ public class QuestionnaireTranslatorImpl implements QuestionnaireTranslator {
 	@Override
 	public Questionnaire toFhirResource(@Nonnull FormResource formResource) {
 		notNull(formResource, "The Openmrs FormResource object should not be null");
-		
 		FhirContext ctx = FhirContext.forR4();
 		IParser p = ctx.newJsonParser();
 		return p.parseResource(Questionnaire.class, formResource.getValue().toString());

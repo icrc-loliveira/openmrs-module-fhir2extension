@@ -1,9 +1,11 @@
-${moduleName}
+openmrs-module-fhir2Extension
 ==========================
 
 Description
 -----------
-This is a very basic module which can be used as a starting point in creating a new module.
+This module's objective is to provide an extension to the `openmrs-module-fhir2` to support FHIR Questionnaires.
+
+In module FHIR Questionnaires correspond to an OpenMRS Form Resource with the json for the FHIR Questionnaire.
 
 Building from Source
 --------------------

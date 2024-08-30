@@ -12,23 +12,16 @@ package org.openmrs.module.fhir2extension.api.dao.impl;
 import static org.hibernate.criterion.Restrictions.*;
 
 import javax.annotation.Nonnull;
-import javax.persistence.criteria.*;
-import javax.persistence.criteria.CriteriaBuilder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import ca.uhn.fhir.rest.param.StringAndListParam;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.sql.JoinType;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.FormResource;
 import org.openmrs.module.fhir2.api.dao.impl.BaseFhirDao;
 import org.openmrs.module.fhir2extension.FhirConstants;
@@ -50,8 +43,8 @@ public class FhirQuestionnaireDaoImpl extends BaseFhirDao<FormResource> implemen
 	
 	@Override
 	public FormResource getQuestionnaireById(@Nonnull Integer id) {
-		return (FormResource) getSessionFactory().getCurrentSession().createCriteria(FormResource.class)
-		        .add(eq("form_resource_id", id)).uniqueResult();
+		return (FormResource) getSessionFactory().getCurrentSession().createCriteria(FormResource.class).add(eq("id", id))
+		        .uniqueResult();
 	}
 	
 	@Override
@@ -68,7 +61,13 @@ public class FhirQuestionnaireDaoImpl extends BaseFhirDao<FormResource> implemen
 	
 	@Override
 	protected void setupSearchParams(Criteria criteria, SearchParameterMap theParams) {
-		//criteria.add(eq("name", FhirConstants.FHIR_QUESTIONNAIRE_TYPE));
+		criteria.add(eq("name", FhirConstants.FHIR_QUESTIONNAIRE_TYPE));
+	}
+	
+	@Override
+	protected void handleRetireable(Criteria criteria) {
+		criteria.createAlias("form", "f");
+		criteria.add(Restrictions.eq("f.retired", false));
 	}
 	
 }

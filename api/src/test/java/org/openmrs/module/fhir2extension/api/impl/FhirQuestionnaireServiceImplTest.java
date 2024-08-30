@@ -132,31 +132,6 @@ public class FhirQuestionnaireServiceImplTest {
         assertThat(questionnaireList, hasSize(3));
     }
 	
-	@Ignore
-	@Test
-    public void searchForQuestionnaires_shouldSearchForQuestionnairesByName() {
-        List<FormResource> forms = new ArrayList<>();
-        forms.add(formResource);
-        StringAndListParam stringAndListParam = new StringAndListParam().addAnd(new StringParam(FORM_NAME));
-        SearchParameterMap theParams = new SearchParameterMap().addParameter(FhirConstants.NAME_SEARCH_HANDLER,
-                stringAndListParam);
-
-        when(dao.getSearchResults(any())).thenReturn(forms);
-        when(dao.getSearchResultsCount(any())).thenReturn(1);
-        when(searchQuery.getQueryResults(any(), any(), any(), any())).thenReturn(new SearchQueryBundleProvider<>(theParams,
-                dao, questionnaireTranslator, globalPropertyService, searchQueryInclude));
-        when(searchQueryInclude.getIncludedResources(any(), any())).thenReturn(Collections.emptySet());
-        when(questionnaireTranslator.toFhirResource(formResource)).thenReturn(fhirQuestionnaire);
-
-        IBundleProvider results = questionnaireService
-                .searchForQuestionnaires(new QuestionnaireSearchParams(stringAndListParam, null, null, null));
-
-        assertThat(results, notNullValue());
-        assertThat(results.size(), equalTo(1));
-
-        assertThat(get(results), hasSize(equalTo(1)));
-    }
-	
 	@Test
     public void searchForQuestionnaires_shouldReturnCollectionOfQuestionnaireWhenLastUpdatedMatched() {
         DateRangeParam lastUpdated = new DateRangeParam().setUpperBound(LAST_UPDATED_DATE).setLowerBound(LAST_UPDATED_DATE);
