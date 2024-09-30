@@ -9,7 +9,7 @@ In module FHIR Questionnaires correspond to an OpenMRS Form Resource with the js
 
 Building from Source
 --------------------
-You will need to have Java 1.6+ and Maven 2.x+ installed.  Use the command 'mvn package' to 
+You will need to have Java 1.8+ and Maven 2.x+ installed.  Use the command 'mvn package' to 
 compile and package the module.  The .omod file will be in the omod/target folder.
 
 Alternatively you can add the snippet provided in the [Creating Modules](https://wiki.openmrs.org/x/cAEr) page to your 
@@ -25,6 +25,7 @@ Installation
 ------------
 1. Build the module to produce the .omod file.
 2. Use the OpenMRS Administration > Manage Modules screen to upload and install the .omod file.
+3. Set the global property fhir2extension.questionnaires.folder to the directory path where the files are located.
 
 If uploads are not allowed from the web (changable via a runtime property), you can drop the omod
 into the ~/.OpenMRS/modules folder.  (Where ~/.OpenMRS is assumed to be the Application 
