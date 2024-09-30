@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.Validate.notNull;
 
 public class QuestionnaireFileUtils {
-
-    private static final String JSON_EXTENSION = ".json";
-
-    public static Questionnaire getQuestionnaire(String questionnairesFolder, String uuid) {
-        return getQuestionnaireByFilename(questionnairesFolder, uuid + JSON_EXTENSION);
-    }
-
-    public static List<Questionnaire> getAllQuestionnaires(String questionnairesFolder) {
+	
+	private static final String JSON_EXTENSION = ".json";
+	
+	public static Questionnaire getQuestionnaire(String questionnairesFolder, String uuid) {
+		return getQuestionnaireByFilename(questionnairesFolder, uuid + JSON_EXTENSION);
+	}
+	
+	public static List<Questionnaire> getAllQuestionnaires(String questionnairesFolder) {
         notNull(questionnairesFolder, "The questionnaires folder is note set");
         File folder = new File(questionnairesFolder);
         if (folder.isDirectory()){
@@ -30,8 +30,8 @@ public class QuestionnaireFileUtils {
         }
         return new ArrayList<>();
     }
-
-    private static Questionnaire getQuestionnaireByFilename(String questionnairesFolder, String fileName) {
+	
+	private static Questionnaire getQuestionnaireByFilename(String questionnairesFolder, String fileName) {
         notNull(questionnairesFolder, "The questionnaires folder is note set");
         Questionnaire questionnaire = null;
         String filePath = questionnairesFolder + fileName;
