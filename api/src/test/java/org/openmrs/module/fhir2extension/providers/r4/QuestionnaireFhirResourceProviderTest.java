@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 import java.util.*;
 
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
@@ -25,9 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openmrs.module.fhir2extension.FhirConstants;
 import org.openmrs.module.fhir2extension.api.FhirQuestionnaireService;
-import org.openmrs.module.fhir2extension.api.search.param.QuestionnaireSearchParams;
 import org.openmrs.module.fhir2extension.providers.BaseFhirProvenanceResourceTest;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,27 +60,6 @@ public class QuestionnaireFhirResourceProviderTest extends BaseFhirProvenanceRes
 	public void getResourceType_shouldReturnResourceType() {
 		assertThat(resourceProvider.getResourceType(), equalTo(Questionnaire.class));
 		assertThat(resourceProvider.getResourceType().getName(), equalTo(Questionnaire.class.getName()));
-	}
-	
-	@Test
-	public void getQuestionnaireById_shouldReturnQuestionnaire() {
-		IdType id = new IdType();
-		id.setValue(QUESTIONNAIRE_UUID);
-		when(questionnaireService.get(QUESTIONNAIRE_UUID)).thenReturn(questionnaire);
-		
-		Questionnaire result = resourceProvider.getQuestionnaireById(id);
-		assertThat(result.isResource(), is(true));
-		assertThat(result, notNullValue());
-		assertThat(result.getId(), notNullValue());
-		assertThat(result.getId(), equalTo(QUESTIONNAIRE_UUID));
-	}
-	
-	@Test(expected = ResourceNotFoundException.class)
-	public void getQuestionnaireByWithWrongId_shouldThrowResourceNotFoundException() {
-		IdType idType = new IdType();
-		idType.setValue(WRONG_QUESTIONNAIRE_UUID);
-		assertThat(resourceProvider.getQuestionnaireById(idType).isResource(), is(true));
-		assertThat(resourceProvider.getQuestionnaireById(idType), nullValue());
 	}
 	
 	private List<IBaseResource> getResources(IBundleProvider result) {

@@ -11,87 +11,80 @@ package org.openmrs.module.fhir2extension.api.impl;
 
 import javax.annotation.Nonnull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import ca.uhn.fhir.rest.api.PatchTypeEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenAndListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.server.SimpleBundleProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hl7.fhir.r4.model.Questionnaire;
-import org.openmrs.FormResource;
-import org.openmrs.module.fhir2.FhirConstants;
-import org.openmrs.module.fhir2.api.impl.BaseFhirService;
-import org.openmrs.module.fhir2extension.api.FhirQuestionnaireService;
-import org.openmrs.module.fhir2extension.api.dao.FhirQuestionnaireDao;
-import org.openmrs.module.fhir2.api.search.SearchQuery;
 import org.openmrs.module.fhir2.api.search.SearchQueryInclude;
-import org.openmrs.module.fhir2extension.api.search.param.QuestionnaireSearchParams;
-import org.openmrs.module.fhir2.api.search.param.SearchParameterMap;
-import org.openmrs.module.fhir2extension.api.translators.QuestionnaireTranslator;
+import org.openmrs.module.fhir2extension.api.FhirQuestionnaireService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.openmrs.api.AdministrationService;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
 @Getter(AccessLevel.PROTECTED)
 @Setter(AccessLevel.PACKAGE)
-public class FhirQuestionnaireServiceImpl extends BaseFhirService<Questionnaire, FormResource> implements FhirQuestionnaireService {
-	
-	@Autowired
-	private FhirQuestionnaireDao dao;
-	
-	@Autowired
-	private QuestionnaireTranslator translator;
-	
+public class FhirQuestionnaireServiceImpl implements FhirQuestionnaireService {
+
 	@Autowired
 	private SearchQueryInclude<Questionnaire> searchQueryInclude;
-	
+
 	@Autowired
-	private SearchQuery<FormResource, Questionnaire, FhirQuestionnaireDao, QuestionnaireTranslator, SearchQueryInclude<Questionnaire>> searchQuery;
-	
+	@Qualifier("adminService")
+	private AdministrationService administrationService;
+
+	private String questionnairesFolder = administrationService.getGlobalProperty("fhir2extension.questionnaires.folder");
+
 	@Override
-    public List<Questionnaire> getQuestionnairesByIds(@Nonnull Collection<Integer> ids) {
-        List<FormResource> questionnaires = dao.getQuestionnairesByIds(ids);
-        return questionnaires.stream().map(translator::toFhirResource).collect(Collectors.toList());
-    }
-	
-	@Override
-	public Questionnaire getById(@Nonnull Integer id) {
-		return translator.toFhirResource(dao.getQuestionnaireById(id));
+	public Questionnaire get(@Nonnull String uuid) {
+		return QuestionnaireFileUtils.getQuestionnaire(questionnairesFolder, uuid);
 	}
-	
+
 	@Override
-	@Transactional(readOnly = true)
-	public IBundleProvider searchForQuestionnaires(QuestionnaireSearchParams questionnaireSearchParams) {
-		return searchQuery.getQueryResults(questionnaireSearchParams.toSearchParameterMap(), dao, translator,
-		    searchQueryInclude);
+	public List<Questionnaire> get(@Nonnull Collection<String> collection) {
+		return collection.stream().map(uuid -> QuestionnaireFileUtils.getQuestionnaire(questionnairesFolder, uuid)).collect(Collectors.toList());
 	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public IBundleProvider getQuestionnaireEverything(TokenParam questionnairId) {
-		SearchParameterMap theParams = new SearchParameterMap().addParameter(FhirConstants.EVERYTHING_SEARCH_HANDLER, "")
-		        .addParameter(FhirConstants.COMMON_SEARCH_HANDLER, FhirConstants.ID_PROPERTY,
-		            new TokenAndListParam().addAnd(questionnairId));
-		
-		populateEverythingOperationParams(theParams);
-		return searchQuery.getQueryResults(theParams, dao, translator, searchQueryInclude);
-	}
-	
+
 	@Override
 	public IBundleProvider getQuestionnaireEverything() {
-		SearchParameterMap theParams = new SearchParameterMap().addParameter(FhirConstants.EVERYTHING_SEARCH_HANDLER, "");
-		
-		populateEverythingOperationParams(theParams);
-		return searchQuery.getQueryResults(theParams, dao, translator, searchQueryInclude);
+		return new SimpleBundleProvider(QuestionnaireFileUtils.getAllQuestionnaires(questionnairesFolder));
 	}
-	
-	private void populateEverythingOperationParams(SearchParameterMap theParams) {
-		// Do nothing
+
+	@Override
+	public Questionnaire create(@Nonnull Questionnaire questionnaire) {
+		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public Questionnaire update(@Nonnull String s, @Nonnull Questionnaire questionnaire) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Questionnaire patch(@Nonnull String s, @Nonnull PatchTypeEnum patchTypeEnum, @Nonnull String s1,
+							   RequestDetails requestDetails) {
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void delete(@Nonnull String s) {
+		throw new UnsupportedOperationException();
+	}
+
 }

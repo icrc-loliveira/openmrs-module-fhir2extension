@@ -22,13 +22,5 @@ import org.openmrs.module.fhir2extension.api.search.param.QuestionnaireSearchPar
 
 public interface FhirQuestionnaireService extends FhirService<Questionnaire> {
 	
-	List<Questionnaire> getQuestionnairesByIds(@Nonnull Collection<Integer> ids);
-	
-	Questionnaire getById(@Nonnull Integer id);
-	
-	IBundleProvider searchForQuestionnaires(QuestionnaireSearchParams questionnaireSearchParams);
-	
-	IBundleProvider getQuestionnaireEverything(TokenParam identifier);
-	
 	IBundleProvider getQuestionnaireEverything();
 }
